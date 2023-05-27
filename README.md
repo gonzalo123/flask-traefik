@@ -67,7 +67,7 @@ def health():
 And that's the configuration of the service:
 
 ```yaml
-version: '3.8'
+version: '3.9'
 
 services:
   nginx:
