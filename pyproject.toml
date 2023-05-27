@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "flask-demo"
+version = "0.1.0"
+description = ""
+authors = ["Gonzalo Ayuso <gonzalo123@gmail.com>"]
+readme = "README.md"
+packages = [{include = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+flask = "^2.3.2"
+gunicorn = "^20.1.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

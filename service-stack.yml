@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: flaskdemo_nginx:latest
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.app.tls=true"
+      - "traefik.http.routers.app.rule=PathPrefix(`/service1`)"
+      - "traefik.http.services.app.loadbalancer.server.port=80"
+    depends_on:
+      - backend
+    networks:
+      - external-net
+      - default-net
+
+  backend:
+    image: flaskdemo:latest
+    command: gunicorn -w 1 app:app -b 0.0.0.0:5000 --timeout 180
+    environment:
+      SLOT: "{{.Task.Slot}}"
+    deploy:
+      replicas: 3
+    networks:
+      - default-net
+
+networks:
+  default-net:
+  external-net:
+    external: true
