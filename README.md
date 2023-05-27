@@ -2,8 +2,7 @@
 
 In this article, we will explore the process of deploying Python applications in a Docker Swarm cluster, utilizing a Traefik reverse proxy and ensuring secure communication through HTTPS. By following this approach, we can enhance the scalability, availability, and security of our Python applications.
 
-HTTP is not a secure protocol. When deploying a web service using HTTP, it is important to be aware that anyone can 
-intercept the traffic between the browser and the server. An attacker simply needs to use a sniffer tool like Wireshark, for example, to view the traffic in plain text, including passwords and sensitive data. The solution to this issue is to use the HTTPS protocol. HTTPS provides two important benefits: first, it ensures that the server is who it claims to be through certificates, and second, it encrypts the traffic between the client and server. When exposing anything to the internet, the use of HTTPS is considered mandatory. However, in some cases, such as internal APIs within a local network, HTTPS may not be utilized. In this article, we will focus on enabling HTTPS for services in a Docker Swarm cluster. Let's get started.
+HTTP is not a secure protocol. When deploying a web service using HTTP, it is important to be aware that anyone can intercept the traffic between the browser and the server. An attacker simply needs to use a sniffer tool like Wireshark, for example, to view the traffic in plain text, including passwords and sensitive data. The solution to this issue is to use the HTTPS protocol. HTTPS provides two important benefits: first, it ensures that the server is who it claims to be through certificates, and second, it encrypts the traffic between the client and server. When exposing anything to the internet, the use of HTTPS is considered mandatory. However, in some cases, such as internal APIs within a local network, HTTPS may not be utilized. In this article, we will focus on enabling HTTPS for services in a Docker Swarm cluster. Let's get started.
 
 To achieve this, we will utilize Traefik as a reverse proxy, serving as the sole entry point for our services deployed within the Swarm cluster. Our deployed stacks will not directly expose any ports outside the cluster; instead, they will be mapped to Traefik. Traefik will then handle the task of exposing these services on specific paths. To establish this setup, both our stacks and Traefik will utilize the same external network. Therefore, the first step is to define this network within our cluster.
 
@@ -46,8 +45,7 @@ networks:
     external: true
 ```
 
-Now, let's define our service. In this example, we will have three replicas of a Flask API backend behind an Nginx 
-proxy, which is a common Python scenario.
+Now, let's define our service. In this example, we will have three replicas of a Flask API backend behind a Nginx proxy, which is a common Python scenario.
 
 ```python
 from flask import Flask
@@ -169,7 +167,6 @@ server {
         access_log off;
         return 200 'Ok!';
     }
-
 }
 ```
 
