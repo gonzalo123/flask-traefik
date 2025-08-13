@@ -65,34 +65,29 @@ def health():
 And that's the configuration of the service:
 
 ```yaml
-version: '3.9'
-
 services:
-  nginx:
-    image: flaskdemo_nginx:latest
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.app.tls=true"
-      - "traefik.http.routers.app.rule=PathPrefix(`/service1`)"
-      - "traefik.http.services.app.loadbalancer.server.port=80"
-    depends_on:
-      - backend
+  traefik:
+    image: traefik:v3.1
+    command:
+      - "--log.level=INFO"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedByDefault=false"
+      # Entrypoints
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+    environment:
+      - TZ=Europe/Madrid
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
     networks:
       - external-net
-      - default-net
-
-  backend:
-    image: flaskdemo:latest
-    command: gunicorn -w 1 app:app -b 0.0.0.0:5000 --timeout 180
-    environment:
-      SLOT: "{{.Task.Slot}}"
-    deploy:
-      replicas: 3
-    networks:
-      - default-net
 
 networks:
-  default-net:
   external-net:
     external: true
 ```
@@ -180,15 +175,13 @@ COPY nginx.conf /etc/nginx/conf.d
 With those two containers we can set up the service
 
 ```yaml
-version: '3.8'
-
 services:
   nginx:
     image: flaskdemo_nginx:latest
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.app.tls=true"
-      - "traefik.http.routers.app.rule=PathPrefix(`/service1`)"
+      - "traefik.http.routers.app.rule=Host(`localhost`) && PathPrefix(`/service1`)"
       - "traefik.http.services.app.loadbalancer.server.port=80"
     depends_on:
       - backend
@@ -210,6 +203,7 @@ networks:
   default-net:
   external-net:
     external: true
+
 ```
 
 As we can observe, the magic of Traefik lies within the labels assigned to the exposed service, which in our case is Nginx. These labels define the path that Traefik will utilize to serve the service, specified as "/service1" in our example. Additionally, we instruct Traefik to use HTTPS for this service. It is crucial to ensure that our exposed Nginx service is placed within the same external network as Traefik, as demonstrated by the "external-net" in our example.

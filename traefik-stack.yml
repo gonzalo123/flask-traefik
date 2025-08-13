@@ -1,19 +1,15 @@
-version: "3.9"
-
 services:
   traefik:
-    image: traefik:v2.10
+    image: traefik:v3.1
     command:
       - "--log.level=INFO"
-      - "--api.insecure=false"
-      - "--api=true"
-      - "--api.dashboard=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedByDefault=false"
+      # Entrypoints
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
-      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
     environment:
       - TZ=Europe/Madrid
     ports:
@@ -21,7 +17,6 @@ services:
       - "443:443"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-
     networks:
       - external-net
 
