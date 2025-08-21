@@ -217,6 +217,8 @@ Now ce can build our containers
 ```shell
 docker build -t flaskdemo .
 docker build -t flaskdemo_nginx .docker/nginx
+
+docker build -t flaskdemo_traefik .docker/traefik
 ```
 
 and deploy to our Swarm cluster (in my example at localhost)
@@ -224,6 +226,16 @@ and deploy to our Swarm cluster (in my example at localhost)
 ```shell
 docker stack deploy -c traefik-stack.yml traefik
 docker stack deploy -c service-stack.yml service1
+```
+
+Generate self-signed certificates
+
+```bash
+openssl req -x509 -nodes -newkey rsa:2048 \
+  -keyout server.key \
+  -out server.crt \
+  -days 3650 \
+  -subj "/CN=tu-localhost"
 ```
 
 And that's it! Our private API is now up and running, utilizing HTTPS for secure communication.

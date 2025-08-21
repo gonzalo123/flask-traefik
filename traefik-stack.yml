@@ -1,6 +1,6 @@
 services:
   traefik:
-    image: traefik:v3.1
+    image: flaskdemo_traefik:latest
     command:
       - "--log.level=INFO"
       - "--providers.docker=true"
@@ -8,8 +8,16 @@ services:
       # Entrypoints
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
+      # Redirect HTTP to HTTPS
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
       - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+      # TLS Configuration
+      - "--providers.file.filename=/config/tls.yml"
+      - "--providers.file.watch=true"
+      # API Dashboard (opcional, para debug)
+      - "--api.dashboard=true"
+      - "--api.insecure=false"
     environment:
       - TZ=Europe/Madrid
     ports:
